@@ -43,7 +43,7 @@
     .feedback .next{font:inherit; font-size:clamp(18px,2.4vw,28px); background:#ffd51e; color:#8b4a70; border:none; border-radius:18px; padding:14px 28px; cursor:pointer}
     .feedback.ok{background:linear-gradient(135deg,#4ade80,#22c55e)}
     .feedback.no{background:linear-gradient(135deg,#f87171,#ef4444)}
-    footer{display:flex; justify-content:space-between; align-items:center; padding:12px 20px; background:#fff; border-top:1px solid #f0d7e7}
+    footer{display:flex; justify-content:flex-start; align-items:center; gap:10px; padding:12px 20px; background:#fff; border-top:1px solid #f0d7e7}
     .restart{font:inherit; border:none; border-radius:14px; background:var(--p1-light); padding:10px 14px; cursor:pointer}
     .complete{display:none; flex:1; align-items:center; justify-content:center; flex-direction:column; gap:16px; padding:24px; text-align:center}
     .complete h2{font-size:clamp(24px,4vw,48px); color:var(--p1-dark); margin:0}
@@ -83,26 +83,27 @@
 
     <footer>
       <button class="restart" id="restart">Nei starten</button>
-      <div class="pill">P1 • 16:9 • Grouss Biller & Schrëft</div>
+      <!-- removed the bottom-right text pill -->
     </footer>
   </div>
 
   <script>
     const RAW = "https://raw.githubusercontent.com/albrechtclaire1007/p1spillsaachen/main";
 
+    // Correct image mapping + fixed popp audio
     const ITEMS = [
-      { word:'en Teddybier', img:'https://i.postimg.cc/XpDBC4jQ/1.png',  audio:`${RAW}/teddybier1.mp3` },
-      { word:'e Fliger',     img:'https://i.postimg.cc/zHG3yP4s/2.png',  audio:`${RAW}/1fliger.mp3` },
-      { word:'e Vëlo',       img:'https://i.postimg.cc/qztMWnrx/11.png', audio:`${RAW}/1velo.mp3` },
-      { word:'eng Popp',     img:'https://i.postimg.cc/KkJ8hD4J/8.png',  audio:`RAW}/1popp.mp3` },
-      { word:'e Ball',       img:'https://i.postimg.cc/Vd5d1pqM/5.png',  audio:`${RAW}/1ball.mp3` },
-      { word:'e Wierfel',    img:'https://i.postimg.cc/YhJq79qK/12.png', audio:`${RAW}/1wierfel.mp3` },
-      { word:'e Roboter',    img:'https://i.postimg.cc/BtSj7Xtm/3.png',  audio:`${RAW}/1roboter.mp3` },
-      { word:'e Radio',      img:'https://i.postimg.cc/WdkzqZf1/6.png',  audio:`${RAW}/1radio.mp3` },
-      { word:'e Kaartespill',img:'https://i.postimg.cc/YGpCPs2v/9.png',  audio:`${RAW}/1kaarte.mp3` },
-      { word:'eng Trommel',  img:'https://i.postimg.cc/xq1dyhF7/10.png', audio:`${RAW}/1trommel.mp3` },
-      { word:'e Videospill', img:'https://i.postimg.cc/S2rJNp1L/4.png',  audio:`${RAW}/1video.mp3` },
-      { word:'e Pësel',      img:'https://i.postimg.cc/SXbs6Kw7/7.png',  audio:`${RAW}/1pesel.mp3` }
+      { word:'en Teddybier',  img:'https://i.postimg.cc/XpDBC4jQ/1.png',  audio:`${RAW}/teddybier1.mp3` },
+      { word:'e Fliger',      img:'https://i.postimg.cc/zHG3yP4s/2.png',  audio:`${RAW}/1fliger.mp3` },
+      { word:'e Vëlo',        img:'https://i.postimg.cc/qztMWnrx/11.png', audio:`${RAW}/1velo.mp3` },
+      { word:'eng Popp',      img:'https://i.postimg.cc/KkJ8hD4J/8.png',  audio:`${RAW}/1popp.mp3` },
+      { word:'e Ball',        img:'https://i.postimg.cc/Vd5d1pqM/5.png',  audio:`${RAW}/1ball.mp3` },
+      { word:'e Wierfel',     img:'https://i.postimg.cc/YhJq79qK/12.png', audio:`${RAW}/1wierfel.mp3` },
+      { word:'e Roboter',     img:'https://i.postimg.cc/BtSj7Xtm/3.png',  audio:`${RAW}/1roboter.mp3` },
+      { word:'e Radio',       img:'https://i.postimg.cc/WdkzqZf1/6.png',  audio:`${RAW}/1radio.mp3` },
+      { word:'e Kaartespill', img:'https://i.postimg.cc/YGpCPs2v/9.png',  audio:`${RAW}/1kaarte.mp3` },
+      { word:'eng Trommel',   img:'https://i.postimg.cc/xq1dyhF7/10.png', audio:`${RAW}/1trommel.mp3` },
+      { word:'e Videospill',  img:'https://i.postimg.cc/S2rJNp1L/4.png',  audio:`${RAW}/1video.mp3` },
+      { word:'e Pësel',       img:'https://i.postimg.cc/SXbs6Kw7/7.png',  audio:`${RAW}/1pesel.mp3` }
     ];
 
     const SHOW_ALL = true;
@@ -131,13 +132,7 @@
       const choicesEl = document.getElementById('choices');
       choicesEl.innerHTML = '';
 
-      let pool;
-      if(SHOW_ALL){
-        pool = ITEMS;
-      } else {
-        const others = shuffle(ITEMS.filter(x=>x!==item)).slice(0,2);
-        pool = shuffle([item, ...others]);
-      }
+      const pool = SHOW_ALL ? ITEMS : shuffle([item, ...shuffle(ITEMS.filter(x=>x!==item)).slice(0,2)]);
 
       pool.forEach(opt=>{
         const btn = document.createElement('button');
@@ -219,3 +214,4 @@
   </script>
 </body>
 </html>
+
