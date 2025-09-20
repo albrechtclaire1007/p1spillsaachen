@@ -31,7 +31,7 @@
     header h1{margin:0; font-size:clamp(18px,2.6vw,32px)}
     .pill{background:#ffffff2b; padding:8px 12px; border-radius:999px}
     .question{
-      flex:1; display:flex; flex-direction:column; gap:10px; padding:14px 16px 0 16px;
+      flex:1; display:flex; flex-direction:column; gap:10px; padding:12px 14px 0;
       background:linear-gradient(180deg,#fff 0%,#fff 60%,#fef6fb 100%)
     }
     .toprow{display:flex; justify-content:space-between; align-items:center; gap:12px}
@@ -39,11 +39,24 @@
       flex:1; text-align:center; font-size:clamp(28px,4.8vw,64px); line-height:1.1; color:var(--p1-dark);
       padding:4px 8px
     }
-    .audio-btn{border:none; border-radius:14px; background:var(--accent); padding:10px 16px; cursor:pointer; font:inherit}
-    .audio-btn:active{transform:scale(.98)}
+    /* Toggle */
+    .toggle{
+      display:flex; align-items:center; gap:10px; user-select:none
+    }
+    .switch{
+      position:relative; width:66px; height:34px; background:#e8e8ee; border-radius:999px; cursor:pointer;
+      box-shadow:inset 0 2px 6px rgba(0,0,0,.12)
+    }
+    .knob{
+      position:absolute; top:3px; left:3px; width:28px; height:28px; border-radius:50%;
+      background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.2); transition:.2s ease
+    }
+    .switch.on{background:#b4f0c8}
+    .switch.on .knob{left:35px}
+    .toggle label{font-size:clamp(14px,1.8vw,18px)}
     .notice{display:none; text-align:center; color:#8b4a70; font-size:clamp(14px,1.8vw,18px)}
     .choices{
-      padding:0 16px 16px 16px;
+      padding:0 12px 12px;
       display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:12px; margin-top:auto
     }
     .choice{
@@ -51,8 +64,8 @@
       display:flex; align-items:center; justify-content:center; transition:.15s ease
     }
     .choice img{
-      width:96%; height:96%; object-fit:contain; border-radius:16px;
-      box-shadow:0 6px 18px rgba(0,0,0,.16)
+      width:100%; height:100%; object-fit:contain; border-radius:16px;
+      box-shadow:0 6px 18px rgba(0,0,0,.12)
     }
     .choice:hover{transform:translateY(-2px)}
     .choice.correct img{outline:6px solid var(--ok)}
@@ -81,11 +94,14 @@
 
     <section class="question" id="question">
       <div class="toprow">
-        <button class="audio-btn" id="hear" title="Héier d'Wuert">Héier d'Wuert</button>
+        <div class="toggle" id="soundToggle" aria-label="Toun un/aus" role="button" tabindex="0">
+          <div class="switch" id="switch"><div class="knob"></div></div>
+          <label id="soundLabel">Toun aus</label>
+        </div>
         <div class="word" id="word">—</div>
         <span style="width:110px"></span>
       </div>
-      <div class="notice" id="notice">Tippt op "Héier d'Wuert" fir den Toun unzeschalten.</div>
+      <div class="notice" id="notice">Tippt op den Toun-Schalter fir den Toun unzeschalten.</div>
       <div class="choices" id="choices" aria-label="Wielt dat richtegt Bild"></div>
     </section>
 
@@ -109,29 +125,28 @@
   <script>
     const RAW = "https://raw.githubusercontent.com/albrechtclaire1007/p1spillsaachen/main";
 
-    // Correct mapping + audios
+    // Add a stable id for each item and map the correct images
     const ITEMS = [
-      { word:'en Teddybier',  img:'https://i.postimg.cc/XpDBC4jQ/1.png',  audio:`${RAW}/teddybier1.mp3` },
-      { word:'e Fliger',      img:'https://i.postimg.cc/zHG3yP4s/2.png',  audio:`${RAW}/1fliger.mp3` },
-      { word:'e Vëlo',        img:'https://i.postimg.cc/qztMWnrx/11.png', audio:`${RAW}/1velo.mp3` },
-      { word:'eng Popp',      img:'https://i.postimg.cc/KkJ8hD4J/8.png',  audio:`${RAW}/1popp.mp3` },
-      { word:'e Ball',        img:'https://i.postimg.cc/Vd5d1pqM/5.png',  audio:`${RAW}/1ball.mp3` },
-      { word:'e Wierfel',     img:'https://i.postimg.cc/YhJq79qK/12.png', audio:`${RAW}/1wierfel.mp3` },
-      { word:'e Roboter',     img:'https://i.postimg.cc/BtSj7Xtm/3.png',  audio:`${RAW}/1roboter.mp3` },
-      { word:'e Radio',       img:'https://i.postimg.cc/WdkzqZf1/6.png',  audio:`${RAW}/1radio.mp3` },
-      { word:'e Kaartespill', img:'https://i.postimg.cc/YGpCPs2v/9.png',  audio:`${RAW}/1kaarte.mp3` },
-      { word:'eng Trommel',   img:'https://i.postimg.cc/xq1dyhF7/10.png', audio:`${RAW}/1trommel.mp3` },
-      { word:'e Videospill',  img:'https://i.postimg.cc/S2rJNp1L/4.png',  audio:`${RAW}/1video.mp3` },
-      { word:'e Pësel',       img:'https://i.postimg.cc/SXbs6Kw7/7.png',  audio:`${RAW}/1pesel.mp3` }
+      { id:'teddybier',  word:'en Teddybier',  img:'https://i.postimg.cc/XpDBC4jQ/1.png',  audio:`${RAW}/teddybier1.mp3` },
+      { id:'fliger',     word:'e Fliger',      img:'https://i.postimg.cc/zHG3yP4s/2.png',  audio:`${RAW}/1fliger.mp3` },
+      { id:'velo',       word:'e Vëlo',        img:'https://i.postimg.cc/qztMWnrx/11.png', audio:`${RAW}/1velo.mp3` },
+      { id:'popp',       word:'eng Popp',      img:'https://i.postimg.cc/KkJ8hD4J/8.png',  audio:`${RAW}/1popp.mp3` },
+      { id:'ball',       word:'e Ball',        img:'https://i.postimg.cc/Vd5d1pqM/5.png',  audio:`${RAW}/1ball.mp3` },
+      { id:'wierfel',    word:'e Wierfel',     img:'https://i.postimg.cc/YhJq79qK/12.png', audio:`${RAW}/1wierfel.mp3` },
+      { id:'roboter',    word:'e Roboter',     img:'https://i.postimg.cc/BtSj7Xtm/3.png',  audio:`${RAW}/1roboter.mp3` },
+      { id:'radio',      word:'e Radio',       img:'https://i.postimg.cc/WdkzqZf1/6.png',  audio:`${RAW}/1radio.mp3` },
+      { id:'kaartespill',word:'e Kaartespill', img:'https://i.postimg.cc/YGpCPs2v/9.png',  audio:`${RAW}/1kaarte.mp3` },
+      { id:'trommel',    word:'eng Trommel',   img:'https://i.postimg.cc/xq1dyhF7/10.png', audio:`${RAW}/1trommel.mp3` },
+      { id:'videospill', word:'e Videospill',  img:'https://i.postimg.cc/S2rJNp1L/4.png',  audio:`${RAW}/1video.mp3` },
+      { id:'pesel',      word:'e Pësel',       img:'https://i.postimg.cc/SXbs6Kw7/7.png',  audio:`${RAW}/1pesel.mp3` }
     ];
 
-    // show all images as options
     const SHOW_ALL = true;
 
     let order = [], qIndex = 0;
     let firstTryCorrectCount = 0;
-    let questionHadMistake = false; // track if the current question was already answered wrongly
-    let currentAudio = null, audioEnabled = false;
+    let questionHadMistake = false;
+    let currentAudio = null, soundOn = false;
 
     function shuffle(a){ return a.map(x=>[Math.random(),x]).sort((u,v)=>u[0]-v[0]).map(x=>x[1]); }
 
@@ -145,17 +160,15 @@
       buildQuestion(true);
     }
 
-    function updateScore(){
-      document.getElementById('score').textContent = String(firstTryCorrectCount);
-    }
+    function updateScore(){ document.getElementById('score').textContent = String(firstTryCorrectCount); }
 
     async function buildQuestion(tryAutoplay=false){
       const item = order[qIndex];
       questionHadMistake = false;
 
       document.getElementById('word').textContent = item.word;
-      const notice = document.getElementById('notice');
-      notice.style.display = audioEnabled ? 'none' : 'block';
+
+      document.getElementById('notice').style.display = soundOn ? 'none' : 'block';
 
       const choicesEl = document.getElementById('choices');
       choicesEl.innerHTML = '';
@@ -169,11 +182,12 @@
         const img = document.createElement('img');
         img.src = opt.img; img.alt = opt.word;
         btn.appendChild(img);
-        btn.addEventListener('click', ()=> onChoose(opt.word === item.word, btn)); // compare by text (robust)
+        // compare by stable id so "Fliger/Videospill" can't ever mismatch
+        btn.addEventListener('click', ()=> onChoose(opt.id === item.id, btn));
         choicesEl.appendChild(btn);
       });
 
-      if(tryAutoplay){ await playAudio(item, true); }
+      if(tryAutoplay && soundOn){ await playAudio(item); }
     }
 
     function onChoose(correct, btn){
@@ -183,14 +197,13 @@
         showFeedback(true);
       }else{
         btn.classList.add('wrong');
-        questionHadMistake = true;               // this question won't count anymore
-        showFeedback(false, true);               // show try-again feedback
+        questionHadMistake = true;
+        showFeedback(false); // allow retry
       }
-      // lock only while feedback is visible
       document.querySelectorAll('.choice').forEach(b=> b.style.pointerEvents='none');
     }
 
-    function showFeedback(ok, allowRetry=false){
+    function showFeedback(ok){
       const fb = document.getElementById('feedback');
       const icon = document.getElementById('fbIcon');
       const msg = document.getElementById('fbMsg');
@@ -199,11 +212,10 @@
       msg.textContent = ok ? 'Richteg!' : 'Nach eng Kéier…';
       fb.style.display = 'flex';
 
-      // If wrong: hide "Next" and let them try again; If correct: show "Next"
+      // If wrong: hide Next; auto-close so kids can retry; unlock again
       document.getElementById('nextBtn').style.display = ok ? 'inline-block' : 'none';
 
       if(!ok){
-        // Close feedback after short delay so they can retry immediately
         setTimeout(()=>{
           fb.style.display='none';
           document.querySelectorAll('.choice').forEach(b=> b.style.pointerEvents='auto');
@@ -230,32 +242,31 @@
 
     function restart(){ init(); }
 
-    // AUDIO
-    async function playAudio(item, isAutoplay=false){
+    async function playAudio(item){
       try{
         if(currentAudio){ currentAudio.pause(); currentAudio=null; }
-        if(!item.audio) return;
+        if(!item.audio || !soundOn) return;
         const a = new Audio(item.audio);
         currentAudio = a;
-        if(isAutoplay){
-          const p = a.play();
-          if(p && typeof p.then === 'function'){
-            await p.then(()=>{ audioEnabled = true; })
-                   .catch(()=>{ audioEnabled = false; });
-          }
-        } else {
-          await a.play().then(()=>{ audioEnabled = true; }).catch(()=>{});
-        }
+        await a.play().catch(()=>{});
       }catch(e){}
     }
 
-    // Controls
-    document.getElementById('hear').addEventListener('click', ()=>{
-      audioEnabled = true;
-      document.getElementById('notice').style.display = 'none';
-      const item = order[qIndex];
-      playAudio(item, false);
-    });
+    // Toun un/aus toggle
+    function setSound(state){
+      soundOn = state;
+      const sw = document.getElementById('switch');
+      const label = document.getElementById('soundLabel');
+      sw.classList.toggle('on', soundOn);
+      label.textContent = soundOn ? 'Toun un' : 'Toun aus';
+      document.getElementById('notice').style.display = soundOn ? 'none' : 'block';
+      if(soundOn){ playAudio(order[qIndex]); } else { if(currentAudio){ currentAudio.pause(); } }
+    }
+
+    const toggle = document.getElementById('soundToggle');
+    toggle.addEventListener('click', ()=> setSound(!soundOn));
+    toggle.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); setSound(!soundOn); } });
+
     document.getElementById('nextBtn').addEventListener('click', next);
     document.getElementById('restart').addEventListener('click', restart);
     document.getElementById('again').addEventListener('click', restart);
