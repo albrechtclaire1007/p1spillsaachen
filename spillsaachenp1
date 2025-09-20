@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="lb">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P1 Spillsaachen – Click Quiz (Audio Autoplay)</title>
+  <style>
+    @font-face{
+      font-family:'Schoulschrëft';
+      src:url('https://raw.githubusercontent.com/albrechtclaire1007/schoulschreft/main/schoulschreft_bold%5B2%5D.TTF') format('truetype');
+      font-weight:bold; font-display:swap;
+    }
+    :root{
+      --p1-light:#cda7ca; --p1-mid:#e4b7d0; --p1-dark:#d88cb8; --accent:#ffd51e;
+      --ink:#1f1f1f; --ok:#18a05e; --bad:#ef4444;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:linear-gradient(135deg,var(--p1-mid),var(--p1-light));
+      font-family:'Schoulschrëft', Arial, sans-serif; font-weight:bold; color:var(--ink);
+      display:grid; place-items:center; padding:12px;
+    }
+    .stage{aspect-ratio:16/9; width:min(1200px,96vw); background:#fff; border-radius:24px;
+      box-shadow:0 20px 60px rgba(0,0,0,.12); overflow:hidden; display:flex; flex-direction:column}
+    header{background:var(--p1-dark); color:#fff; padding:14px 20px; display:flex; justify-content:space-between; align-items:center}
+    header h1{margin:0; font-size:clamp(18px,2.6vw,32px)}
+    .pill{background:#ffffff2b; padding:8px 12px; border-radius:999px}
+    .question{flex:1; display:flex; flex-direction:column; gap:16px; padding:18px 22px; background:linear-gradient(180deg,#fff 0%,#fff 60%,#fef6fb 100%)}
+    .toprow{display:flex; justify-content:space-between; align-items:center; gap:12px}
+    .word{flex:1; text-align:center; font-size:clamp(28px,4.8vw,64px); line-height:1.1; color:var(--p1-dark); padding:6px 12px}
+    .audio-btn{border:none; border-radius:14px; background:var(--accent); padding:10px 16px; cursor:pointer; font:inherit}
+    .audio-btn:active{transform:scale(.98)}
+    .choices{display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-top:auto}
+    .choice{background:transparent; border:none; padding:8px; cursor:pointer; aspect-ratio:1; display:flex; align-items:center; justify-content:center; transition:.2s ease}
+    .choice img{width:100%; height:100%; object-fit:contain; border-radius:16px; box-shadow:0 8px 25px rgba(0,0,0,.18); transition:.2s ease}
+    .choice:hover{transform:translateY(-2px)}
+    .choice.correct img{outline:8px solid var(--ok)}
+    .choice.wrong img{outline:8px solid var(--bad)}
+    .feedback{display:none; position:fixed; inset:0; z-index:1000; align-items:center; justify-content:center; flex-direction:column; gap:18px; color:#fff; text-align:center}
+    .feedback .icon{font-size:clamp(48px,10vw,120px)}
+    .feedback .msg{font-size:clamp(32px,6vw,96px)}
+    .feedback .next{font:inherit; font-size:clamp(18px,2.4vw,28px); background:#ffd51e; color:#8b4a70; border:none; border-radius:18px; padding:14px 28px; cursor:pointer}
+    .feedback.ok{background:linear-gradient(135deg,#4ade80,#22c55e)}
+    .feedback.no{background:linear-gradient(135deg,#f87171,#ef4444)}
+    footer{display:flex; justify-content:space-between; align-items:center; padding:12px 20px; background:#fff; border-top:1px solid #f0d7e7}
+    .restart{font:inherit; border:none; border-radius:14px; background:var(--p1-light); padding:10px 14px; cursor:pointer}
+    .complete{display:none; flex:1; align-items:center; justify-content:center; flex-direction:column; gap:16px; padding:24px; text-align:center}
+    .complete h2{font-size:clamp(24px,4vw,48px); color:var(--p1-dark); margin:0}
+    .complete .big{font-size:clamp(18px,3vw,28px)}
+    .notice{display:none; text-align:center; color:#8b4a70; font-size:clamp(14px,1.8vw,18px)}
+    @media (max-width:900px){ .choices{grid-template-columns:repeat(3,1fr)} }
+  </style>
+</head>
+<body>
+  <div class="stage" role="application" aria-label="P1 Spillsaachen Quiz">
+    <header>
+      <h1>🧸 Spillsaachen Quiz</h1>
+      <div class="pill" id="progress">1/12</div>
+    </header>
+
+    <section class="question" id="question">
+      <div class="toprow">
+        <button class="audio-btn" id="hear" title="Héier d'Wuert">🔊 Héier d'Wuert</button>
+        <div class="word" id="word">—</div>
+        <span style="width:110px"></span>
+      </div>
+      <div class="notice" id="notice">Tippt op 🔊 fir den Toun unzeschalten.</div>
+      <div class="choices" id="choices" aria-label="Wielt dat richtegt Bild"></div>
+    </section>
+
+    <section class="complete" id="complete">
+      <h2>🎉 Fantastësch! 🎉</h2>
+      <div class="big" id="scoreMsg">Du hues X vun 12 richteg.</div>
+      <button class="restart" id="again">Nach eng Kéier spillen</button>
+    </section>
+
+    <div class="feedback" id="feedback">
+      <div class="icon" id="fbIcon">✓</div>
+      <div class="msg" id="fbMsg">Richteg!</div>
+      <button class="next" id="nextBtn">Weider</button>
+    </div>
+
+    <footer>
+      <button class="restart" id="restart">Nei starten</button>
+      <div class="pill">P1 • 16:9 • Grouss Biller & Schrëft</div>
+    </footer>
+  </div>
+
+  <script>
+    const RAW = "https://raw.githubusercontent.com/albrechtclaire1007/p1spillsaachen/main";
+
+    const ITEMS = [
+      { word:'en Teddybier', img:'https://i.postimg.cc/XpDBC4jQ/1.png',  audio:`${RAW}/teddybier1.mp3` },
+      { word:'e Fliger',     img:'https://i.postimg.cc/zHG3yP4s/2.png',  audio:`${RAW}/1fliger.mp3` },
+      { word:'e Vëlo',       img:'https://i.postimg.cc/qztMWnrx/11.png', audio:`${RAW}/1velo.mp3` },
+      { word:'eng Popp',     img:'https://i.postimg.cc/KkJ8hD4J/8.png',  audio:`RAW}/1popp.mp3` },
+      { word:'e Ball',       img:'https://i.postimg.cc/Vd5d1pqM/5.png',  audio:`${RAW}/1ball.mp3` },
+      { word:'e Wierfel',    img:'https://i.postimg.cc/YhJq79qK/12.png', audio:`${RAW}/1wierfel.mp3` },
+      { word:'e Roboter',    img:'https://i.postimg.cc/BtSj7Xtm/3.png',  audio:`${RAW}/1roboter.mp3` },
+      { word:'e Radio',      img:'https://i.postimg.cc/WdkzqZf1/6.png',  audio:`${RAW}/1radio.mp3` },
+      { word:'e Kaartespill',img:'https://i.postimg.cc/YGpCPs2v/9.png',  audio:`${RAW}/1kaarte.mp3` },
+      { word:'eng Trommel',  img:'https://i.postimg.cc/xq1dyhF7/10.png', audio:`${RAW}/1trommel.mp3` },
+      { word:'e Videospill', img:'https://i.postimg.cc/S2rJNp1L/4.png',  audio:`${RAW}/1video.mp3` },
+      { word:'e Pësel',      img:'https://i.postimg.cc/SXbs6Kw7/7.png',  audio:`${RAW}/1pesel.mp3` }
+    ];
+
+    const SHOW_ALL = true;
+
+    let order = [], qIndex = 0, score = 0;
+    let currentAudio = null, audioEnabled = false;
+
+    function shuffle(a){ return a.map(x=>[Math.random(),x]).sort((u,v)=>u[0]-v[0]).map(x=>x[1]); }
+
+    function init(){
+      order = shuffle([...ITEMS]);
+      qIndex = 0; score = 0;
+      document.getElementById('complete').style.display='none';
+      document.getElementById('question').style.display='flex';
+      buildQuestion(true);
+    }
+
+    async function buildQuestion(tryAutoplay=false){
+      const item = order[qIndex];
+      document.getElementById('word').textContent = item.word;
+      document.getElementById('progress').textContent = `${qIndex+1}/${order.length}`;
+
+      const notice = document.getElementById('notice');
+      notice.style.display = audioEnabled ? 'none' : 'block';
+
+      const choicesEl = document.getElementById('choices');
+      choicesEl.innerHTML = '';
+
+      let pool;
+      if(SHOW_ALL){
+        pool = ITEMS;
+      } else {
+        const others = shuffle(ITEMS.filter(x=>x!==item)).slice(0,2);
+        pool = shuffle([item, ...others]);
+      }
+
+      pool.forEach(opt=>{
+        const btn = document.createElement('button');
+        btn.className = 'choice';
+        btn.setAttribute('aria-label', opt.word);
+        const img = document.createElement('img');
+        img.src = opt.img; img.alt = opt.word;
+        btn.appendChild(img);
+        btn.addEventListener('click', ()=> onChoose(opt===item, btn));
+        choicesEl.appendChild(btn);
+      });
+
+      if(tryAutoplay){ await playAudio(item, true); }
+    }
+
+    function onChoose(correct, btn){
+      if(correct){ btn.classList.add('correct'); score++; showFeedback(true); }
+      else { btn.classList.add('wrong'); showFeedback(false); }
+      document.querySelectorAll('.choice').forEach(b=> b.style.pointerEvents='none');
+    }
+
+    function showFeedback(ok){
+      const fb = document.getElementById('feedback');
+      const icon = document.getElementById('fbIcon');
+      const msg = document.getElementById('fbMsg');
+      fb.className = 'feedback ' + (ok ? 'ok' : 'no');
+      icon.textContent = ok ? '✓' : '✗';
+      msg.textContent = ok ? 'Richteg!' : 'Nach eng Kéier…';
+      fb.style.display = 'flex';
+    }
+
+    function next(){
+      const fb = document.getElementById('feedback');
+      fb.style.display = 'none';
+      document.querySelectorAll('.choice').forEach(b=> b.style.pointerEvents='auto');
+      qIndex++;
+      if(qIndex>=order.length){ finish(); }
+      else { buildQuestion(true); }
+    }
+
+    function finish(){
+      document.getElementById('question').style.display='none';
+      const done = document.getElementById('complete');
+      done.style.display='flex';
+      document.getElementById('scoreMsg').textContent = `Du hues ${score} vun ${order.length} richteg.`;
+    }
+
+    function restart(){ init(); }
+
+    async function playAudio(item, isAutoplay=false){
+      try{
+        if(currentAudio){ currentAudio.pause(); currentAudio=null; }
+        if(!item.audio) return;
+        const a = new Audio(item.audio);
+        currentAudio = a;
+        if(isAutoplay){
+          const p = a.play();
+          if(p && typeof p.then === 'function'){
+            await p.then(()=>{ audioEnabled = true; })
+                   .catch(()=>{ audioEnabled = false; });
+          }
+        } else {
+          await a.play().then(()=>{ audioEnabled = true; }).catch(()=>{});
+        }
+      }catch(e){}
+    }
+
+    document.getElementById('hear').addEventListener('click', ()=>{
+      audioEnabled = true;
+      document.getElementById('notice').style.display = 'none';
+      const item = order[qIndex];
+      playAudio(item, false);
+    });
+    document.getElementById('nextBtn').addEventListener('click', next);
+    document.getElementById('restart').addEventListener('click', restart);
+    document.getElementById('again').addEventListener('click', restart);
+
+    init();
+  </script>
+</body>
+</html>
