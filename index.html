@@ -40,9 +40,7 @@
       padding:4px 8px
     }
     /* Toggle */
-    .toggle{
-      display:flex; align-items:center; gap:10px; user-select:none
-    }
+    .toggle{ display:flex; align-items:center; gap:10px; user-select:none }
     .switch{
       position:relative; width:66px; height:34px; background:#e8e8ee; border-radius:999px; cursor:pointer;
       box-shadow:inset 0 2px 6px rgba(0,0,0,.12)
@@ -88,7 +86,7 @@
   <div class="stage" role="application" aria-label="P1 Spillsaachen Quiz">
     <header>
       <h1>Spillsaachen Quiz</h1>
-      <!-- score shows ONLY first-try-correct count -->
+      <!-- score = number of first-try correct answers -->
       <div class="pill" id="score">0</div>
     </header>
 
@@ -125,10 +123,11 @@
   <script>
     const RAW = "https://raw.githubusercontent.com/albrechtclaire1007/p1spillsaachen/main";
 
-    // Add a stable id for each item and map the correct images
+    // Each item has an id, the displayed word+audio, and the image to click.
+    // For FLIGER/VIDEOSPILL we intentionally "swap" the correct target via correctId.
     const ITEMS = [
       { id:'teddybier',  word:'en Teddybier',  img:'https://i.postimg.cc/XpDBC4jQ/1.png',  audio:`${RAW}/teddybier1.mp3` },
-      { id:'fliger',     word:'e Fliger',      img:'https://i.postimg.cc/zHG3yP4s/2.png',  audio:`${RAW}/1fliger.mp3` },
+      { id:'fliger',     word:'e Fliger',      img:'https://i.postimg.cc/zHG3yP4s/2.png',  audio:`${RAW}/1fliger.mp3`,   correctId:'videospill' },
       { id:'velo',       word:'e Vëlo',        img:'https://i.postimg.cc/qztMWnrx/11.png', audio:`${RAW}/1velo.mp3` },
       { id:'popp',       word:'eng Popp',      img:'https://i.postimg.cc/KkJ8hD4J/8.png',  audio:`${RAW}/1popp.mp3` },
       { id:'ball',       word:'e Ball',        img:'https://i.postimg.cc/Vd5d1pqM/5.png',  audio:`${RAW}/1ball.mp3` },
@@ -137,7 +136,7 @@
       { id:'radio',      word:'e Radio',       img:'https://i.postimg.cc/WdkzqZf1/6.png',  audio:`${RAW}/1radio.mp3` },
       { id:'kaartespill',word:'e Kaartespill', img:'https://i.postimg.cc/YGpCPs2v/9.png',  audio:`${RAW}/1kaarte.mp3` },
       { id:'trommel',    word:'eng Trommel',   img:'https://i.postimg.cc/xq1dyhF7/10.png', audio:`${RAW}/1trommel.mp3` },
-      { id:'videospill', word:'e Videospill',  img:'https://i.postimg.cc/S2rJNp1L/4.png',  audio:`${RAW}/1video.mp3` },
+      { id:'videospill', word:'e Videospill',  img:'https://i.postimg.cc/S2rJNp1L/4.png',  audio:`${RAW}/1video.mp3`,    correctId:'fliger' },
       { id:'pesel',      word:'e Pësel',       img:'https://i.postimg.cc/SXbs6Kw7/7.png',  audio:`${RAW}/1pesel.mp3` }
     ];
 
@@ -182,8 +181,8 @@
         const img = document.createElement('img');
         img.src = opt.img; img.alt = opt.word;
         btn.appendChild(img);
-        // compare by stable id so "Fliger/Videospill" can't ever mismatch
-        btn.addEventListener('click', ()=> onChoose(opt.id === item.id, btn));
+        const correctId = item.correctId || item.id; // swapped logic for fliger/videospill
+        btn.addEventListener('click', ()=> onChoose(opt.id === correctId, btn));
         choicesEl.appendChild(btn);
       });
 
@@ -211,10 +210,7 @@
       icon.textContent = ok ? '✓' : '✗';
       msg.textContent = ok ? 'Richteg!' : 'Nach eng Kéier…';
       fb.style.display = 'flex';
-
-      // If wrong: hide Next; auto-close so kids can retry; unlock again
       document.getElementById('nextBtn').style.display = ok ? 'inline-block' : 'none';
-
       if(!ok){
         setTimeout(()=>{
           fb.style.display='none';
@@ -276,5 +272,6 @@
   </script>
 </body>
 </html>
+
 
 
