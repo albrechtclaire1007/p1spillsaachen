@@ -13,50 +13,39 @@
   }
 
   :root{
-    /* P1 pinks */
-    --pink-mid:#e4b7d0;
-    --pink-light:#f6e4ee;
-    --pink-dark:#d88cb8;
-    --ink:#1f1f1f;
-    --white:#fff;
-    --bad:#ffcccc;
-    --ok:#b7f0c8;
+    --pink-mid:#e4b7d0; --pink-light:#f6e4ee; --pink-dark:#d88cb8;
+    --ink:#1f1f1f; --white:#fff; --bad:#ffcccc; --ok:#b7f0c8;
     --border:3px;
   }
 
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; outline:none;}
   html,body{height:100%; margin:0; background:linear-gradient(135deg,var(--pink-mid),var(--pink-light)); color:var(--ink); font-family:'Schoulschrëft', Arial, sans-serif;}
 
+  /* Top bar with arrows */
   .top{
-    position:sticky; top:8px; z-index:10; display:flex; gap:10px; align-items:center; justify-content:center;
+    position:sticky; top:8px; z-index:10; display:flex; gap:12px; align-items:center; justify-content:center;
     background:var(--white); border:var(--border) solid var(--pink-dark); border-radius:18px;
-    padding:.35rem .6rem; margin:10px auto; width:fit-content;
+    padding:.35rem .8rem; margin:10px auto; width:fit-content;
     box-shadow:0 8px 24px rgba(0,0,0,.08);
   }
-  .btn{
+  .iconBtn{
     border:var(--border) solid var(--ink); background:var(--white); color:var(--ink);
-    padding:.45rem .85rem; border-radius:14px; cursor:pointer; font-size:1.05rem;
+    padding:.25rem .7rem; border-radius:14px; cursor:pointer; font-size:1.4rem; line-height:1;
+    min-width:2.4rem; display:grid; place-items:center;
   }
-  .btn:active{ transform:scale(.98); }
-  .flow{opacity:.9; font-size:1rem; padding:0 .4rem; min-width:10ch; text-align:center;}
-
-  .wrap{
-    min-height:100%;
-    display:flex; flex-direction:column; align-items:center;
-    gap:2.5vmin; padding:2.5vmin 3vmin 4vmin;
-  }
-  h1{margin:.2rem 0 0; text-align:center; font-size:clamp(2rem, 6vmin, 4.2rem); color:var(--ink);}
-
+  .iconBtn:active{ transform:scale(.98); }
+  .flow{opacity:.9; font-size:1rem; padding:0 .4rem; min-width:8ch; text-align:center;}
   .hidden{display:none !important;}
 
-  /* Generic grids */
+  .wrap{min-height:100%; display:flex; flex-direction:column; align-items:center; gap:2.5vmin; padding:2.5vmin 3vmin 4vmin;}
+  h1{margin:.2rem 0 0; text-align:center; font-size:clamp(2rem,6vmin,4.2rem); color:var(--ink);}
+
+  /* Generic grids / tokens */
   .grid{
     width:95vw; max-width:2000px; display:grid; gap:2vmin;
     grid-template-columns: repeat(auto-fill, minmax(14vmin, 1fr));
     align-items:stretch;
   }
-
-  /* Image tokens (square buttons) */
   .imgToken{
     background:var(--white); border:6px solid var(--pink-mid); border-radius:22px;
     display:grid; place-items:center; aspect-ratio:1/1; cursor:pointer;
@@ -66,27 +55,25 @@
   .imgToken:active{ transform:scale(.97); }
   .imgToken img{ width:90%; height:90%; object-fit:contain; }
 
+  .btn{
+    border:var(--border) solid var(--ink); background:var(--white); color:var(--ink);
+    padding:.45rem .85rem; border-radius:14px; cursor:pointer; font-size:1.05rem;
+  }
+  .btn:active{ transform:scale(.98); }
+
   .flash-good{ background:var(--ok) !important; border-color:var(--ok) !important; }
   .flash-bad{ background:var(--bad) !important; border-color:var(--bad) !important; }
 
-  /* Audio play button */
-  .audioBar{ display:flex; align-items:center; gap:.8rem; }
-  .playBtn{
-    width:58px; height:58px; border-radius:50%;
-    border:var(--border) solid var(--ink); background:var(--pink-mid);
-    display:grid; place-items:center; font-size:1.3rem; cursor:pointer;
-  }
-
-  /* Big random square (game 3) */
+  /* Game 3 – smaller big square */
   .bigSquare{
-    width:min(95vmin,100%); aspect-ratio:1/1; background:#fff;
+    width:min(70vmin,90%); aspect-ratio:1/1; background:#fff;
     border:12px solid var(--pink-mid); border-radius:40px; display:grid; place-items:center;
     position:relative; cursor:pointer;
     box-shadow:0 10px 30px rgba(0,0,0,.08);
     transition:transform .12s ease;
   }
   .bigSquare:active{ transform:scale(.98); }
-  .bigSquare img{ width:88%; height:88%; object-fit:contain; }
+  .bigSquare img{ width:85%; height:85%; object-fit:contain; }
   .reset{
     position:absolute; top:14px; right:18px; width:48px; height:48px; border-radius:50%;
     background:#fff; border:4px solid var(--pink-mid); display:grid; place-items:center;
@@ -97,65 +84,57 @@
 
   /* Memory */
   .memGrid{
-    width:95vw; max-width:1600px;
+    width:95vw; max-width:1200px;
     display:grid; gap:1.4vmin;
-    grid-template-columns: repeat(auto-fill, minmax(16vmin, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(18vmin, 1fr));
   }
-  .card{
-    aspect-ratio:3/4; perspective:1000px; cursor:pointer;
-  }
-  .inner{
-    position:relative; width:100%; height:100%;
-    transform-style:preserve-3d; transition:transform .25s ease;
-  }
+  .card{ aspect-ratio:3/4; perspective:1000px; cursor:pointer; }
+  .inner{ position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .25s ease; }
   .flipped .inner{ transform:rotateY(180deg); }
-  .face{
-    position:absolute; inset:0; border-radius:18px; border:6px solid var(--pink-mid);
-    backface-visibility:hidden; display:grid; place-items:center; background:#fff;
-    box-shadow:0 8px 20px rgba(0,0,0,.08);
-  }
-  .front{ }
+  .face{ position:absolute; inset:0; border-radius:18px; border:6px solid var(--pink-mid);
+         backface-visibility:hidden; display:grid; place-items:center; background:#fff;
+         box-shadow:0 8px 20px rgba(0,0,0,.08); }
   .back{ transform:rotateY(180deg); }
-  .soundTag{ font-size:clamp(1.4rem,4vmin,2.2rem); }
+  .sndWord{ font-size:clamp(1.6rem,4.6vmin,2.4rem); padding:.3rem .6rem; }
 
-  /* Sentence builder (game 4) */
+  /* Game 4 – sentence */
   .sentence{ display:flex; align-items:center; gap:min(2.2vmin,16px); flex-wrap:wrap; justify-content:center; font-size:clamp(2rem,4.8vw,3.2rem); }
+  .wordSq{ padding:.2rem .6rem; min-height:3rem; border-radius:16px; border:6px solid var(--pink-mid); background:#fff; cursor:pointer; }
+  .prepSq{ padding:.2rem .6rem; border-radius:16px; border:6px solid var(--pink-mid); background:var(--pink-light); cursor:pointer; }
   .inlineSq{
     display:inline-grid; place-items:center; width:min(36vmin,420px); aspect-ratio:1/1;
     border:10px solid var(--pink-mid); border-radius:28px; background:#fff; cursor:pointer;
-    box-shadow:0 8px 24px rgba(0,0,0,.08); font-size:min(20vmin,10rem); transition:transform .12s ease;
+    box-shadow:0 8px 24px rgba(0,0,0,.08); transition:transform .12s ease;
   }
-  .inlineSq:active{ transform:scale(.97); }
-  .wordSq{ padding:0 .6rem; min-height:3.2rem; border-radius:16px; border:6px solid var(--pink-mid); background:#fff; }
-  .wordSqBtn{ border:6px solid var(--pink-mid); background:var(--pink-light); padding:.3rem .7rem; border-radius:14px; cursor:pointer; }
-  .miniBar{ display:flex; gap:.6rem; align-items:center; justify-content:center; flex-wrap:wrap; }
-  .hint{ font-size:clamp(1.1rem,2.6vw,1.6rem); opacity:.8; }
-
+  .verbCircle{
+    width:min(16vmin,180px); height:min(16vmin,180px);
+    border-radius:50%; border:6px solid #000; background:#fff;
+    display:grid; place-items:center; cursor:pointer;
+  }
+  .verbCircle img{ width:75%; height:75%; object-fit:contain; }
 </style>
 </head>
 <body>
 
 <!-- Top nav -->
 <div class="top">
-  <button class="btn" id="prev">Zréck</button>
+  <button class="iconBtn" id="prev">◀</button>
   <span class="flow" id="flowLabel">1. Spill</span>
-  <button class="btn" id="next">Weider</button>
+  <button class="iconBtn" id="next">▶</button>
 </div>
 
 <!-- Spill 1: Lauschter a klick op dat richtegt Bild -->
 <section class="wrap" id="g1">
   <h1>Lauschter a klick op dat richtegt Bild</h1>
-  <div class="audioBar"><button class="playBtn" id="play1" title="Ofspillen">▶</button></div>
   <div class="grid" id="grid1"></div>
+  <div><button class="btn" id="play1">Toun spillen</button></div>
 </section>
 
 <!-- Spill 2: Memory (Bild – Toun) -->
 <section class="wrap hidden" id="g2">
   <h1>Memory: Bild – Toun</h1>
   <div class="memGrid" id="memGrid"></div>
-  <div class="miniBar">
-    <button class="btn" id="memReset">Nei mëschen</button>
-  </div>
+  <div><button class="btn" id="memReset">Nei mëschen</button></div>
 </section>
 
 <!-- Spill 3: Kuck a so wat et ass -->
@@ -165,26 +144,22 @@
     <img id="bigImg" alt="">
     <button class="reset" id="bigReset" title="Nei ufänken">↻</button>
   </div>
-  <div class="miniBar">
-    <button class="btn" id="sayPlay">Toun spillen</button>
-  </div>
+  <div><button class="btn" id="sayPlay">Check (Toun)</button></div>
 </section>
 
 <!-- Spill 4: Lies d'Sätz -->
 <section class="wrap hidden" id="g4">
   <h1>Lies d'Sätz</h1>
   <div class="sentence">
-    <span>Ech</span>
-    <span class="wordSq">spille</span>
-    <span class="wordSq">gär</span>
-    <button class="wordSqBtn" id="prepSq" title="mam / mat der">mam</button>
+    <span class="wordSq" id="wEch">Ech</span>
+    <div class="verbCircle" id="wSpillen"><img src="https://i.postimg.cc/vTzKPfgc/Spillen.png" alt="spillen"></div>
+    <span class="wordSq" id="wGaar">gär</span>
+    <span class="prepSq" id="prepSq">mam</span>
     <div class="inlineSq" id="nounSq"><img id="nounImg" alt="" style="width:85%; height:85%; object-fit:contain"></div>
     <span>.</span>
   </div>
-  <div class="miniBar">
+  <div style="display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap;">
     <button class="btn" id="playSentence">Saz ofspillen</button>
-    <button class="btn" id="nextNoun">Nächst</button>
-    <span class="hint">Hinweis: **mat der** nëmme bei <em>eng Popp</em> a <em>eng Trommel</em>.</span>
   </div>
 </section>
 
@@ -194,24 +169,23 @@
 /* ---------- DATA ---------- */
 const RAW = "https://raw.githubusercontent.com/albrechtclaire1007/p1spillsaachen/main";
 
-/* Items reused from your existing P1 quiz (ids, words, imgs, audios)
-   + preposition rule for game 4: Popp & Trommel -> 'mat der', others -> 'mam' */
+/* Core items (with swap rule for game 1) */
 const ITEMS = [
-  { id:'teddybier',  word:'en Teddybier',  img:'https://i.postimg.cc/XpDBC4jQ/1.png',  audio:`${RAW}/teddybier1.mp3`,  prep:'mam' },
-  { id:'fliger',     word:'e Fliger',      img:'https://i.postimg.cc/zHG3yP4s/2.png',  audio:`${RAW}/1fliger.mp3`,     prep:'mam' },
-  { id:'velo',       word:'e Vëlo',        img:'https://i.postimg.cc/qztMWnrx/11.png', audio:`${RAW}/1velo.mp3`,       prep:'mam' },
-  { id:'popp',       word:'eng Popp',      img:'https://i.postimg.cc/KkJ8hD4J/8.png',  audio:`${RAW}/1popp.mp3`,       prep:'matder' },
-  { id:'ball',       word:'e Ball',        img:'https://i.postimg.cc/Vd5d1pqM/5.png',  audio:`${RAW}/1ball.mp3`,       prep:'mam' },
-  { id:'wierfel',    word:'e Wierfel',     img:'https://i.postimg.cc/YhJq79qK/12.png', audio:`${RAW}/1wierfel.mp3`,    prep:'mam' },
-  { id:'roboter',    word:'e Roboter',     img:'https://i.postimg.cc/BtSj7Xtm/3.png',  audio:`${RAW}/1roboter.mp3`,    prep:'mam' },
-  { id:'radio',      word:'e Radio',       img:'https://i.postimg.cc/WdkzqZf1/6.png',  audio:`${RAW}/1radio.mp3`,      prep:'mam' },
-  { id:'kaartespill',word:'e Kaartespill', img:'https://i.postimg.cc/YGpCPs2v/9.png',  audio:`${RAW}/1kaarte.mp3`,     prep:'mam' },
-  { id:'trommel',    word:'eng Trommel',   img:'https://i.postimg.cc/xq1dyhF7/10.png', audio:`${RAW}/1trommel.mp3`,    prep:'matder' },
-  { id:'videospill', word:'e Videospill',  img:'https://i.postimg.cc/S2rJNp1L/4.png',  audio:`${RAW}/1video.mp3`,      prep:'mam' },
-  { id:'pesel',      word:'e Pësel',       img:'https://i.postimg.cc/SXbs6Kw7/7.png',  audio:`${RAW}/1pesel.mp3`,      prep:'mam' }
+  { id:'teddybier',  word:'en Teddybier',  img:'https://i.postimg.cc/XpDBC4jQ/1.png',  audio:`${RAW}/teddybier1.mp3` },
+  { id:'fliger',     word:'e Fliger',      img:'https://i.postimg.cc/zHG3yP4s/2.png',  audio:`${RAW}/1fliger.mp3`,   correctId:'videospill' },
+  { id:'velo',       word:'e Vëlo',        img:'https://i.postimg.cc/qztMWnrx/11.png', audio:`${RAW}/1velo.mp3` },
+  { id:'popp',       word:'eng Popp',      img:'https://i.postimg.cc/KkJ8hD4J/8.png',  audio:`${RAW}/1popp.mp3` },
+  { id:'ball',       word:'e Ball',        img:'https://i.postimg.cc/Vd5d1pqM/5.png',  audio:`${RAW}/1ball.mp3` },
+  { id:'wierfel',    word:'e Wierfel',     img:'https://i.postimg.cc/YhJq79qK/12.png', audio:`${RAW}/1wierfel.mp3` },
+  { id:'roboter',    word:'e Roboter',     img:'https://i.postimg.cc/BtSj7Xtm/3.png',  audio:`${RAW}/1roboter.mp3` },
+  { id:'radio',      word:'e Radio',       img:'https://i.postimg.cc/WdkzqZf1/6.png',  audio:`${RAW}/1radio.mp3` },
+  { id:'kaartespill',word:'e Kaartespill', img:'https://i.postimg.cc/YGpCPs2v/9.png',  audio:`${RAW}/1kaarte.mp3` },
+  { id:'trommel',    word:'eng Trommel',   img:'https://i.postimg.cc/xq1dyhF7/10.png', audio:`${RAW}/1trommel.mp3` },
+  { id:'videospill', word:'e Videospill',  img:'https://i.postimg.cc/S2rJNp1L/4.png',  audio:`${RAW}/1video.mp3`,    correctId:'fliger' },
+  { id:'pesel',      word:'e Pësel',       img:'https://i.postimg.cc/SXbs6Kw7/7.png',  audio:`${RAW}/1pesel.mp3` }
 ];
 
-/* Sentence word audios */
+/* Sentence audios */
 const SAZ = {
   ech    : `${RAW}/ech.mp3`,
   spillen: `${RAW}/spillen.mp3`,
@@ -222,17 +196,29 @@ const SAZ = {
 
 /* ---------- UTIL ---------- */
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+
 const pages = ["g1","g2","g3","g4"];
 let pageIdx = 0;
 const flowLabel = document.getElementById('flowLabel');
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+
 function labelFor(i){ return `${i+1}. Spill`; }
+function updateNav(){
+  flowLabel.textContent = labelFor(pageIdx);
+  prevBtn.classList.toggle('hidden', pageIdx===0);
+  nextBtn.classList.toggle('hidden', pageIdx===pages.length-1);
+}
 function showPage(i){
   pageIdx = Math.max(0, Math.min(pages.length-1, i));
   pages.forEach((id,idx)=>document.getElementById(id).classList.toggle('hidden', idx!==pageIdx));
-  flowLabel.textContent = labelFor(pageIdx);
+  updateNav();
 }
-document.getElementById('prev').onclick = ()=> showPage(pageIdx-1);
-document.getElementById('next').onclick = ()=> showPage(pageIdx+1);
+prevBtn.onclick = ()=> showPage(pageIdx-1);
+nextBtn.onclick = ()=> showPage(pageIdx+1);
+
+/* Auto-advance helper */
+function autoAdvance(delay=900){ setTimeout(()=> showPage(pageIdx+1), delay); }
 
 const speaker = document.getElementById('speaker');
 async function playSound(src){ try{ if(speaker.src!==src) speaker.src=src; await speaker.play(); }catch(e){} }
@@ -251,8 +237,7 @@ let target1 = null;
 
 function layoutG1(){
   grid1.innerHTML = "";
-  const pool = shuffle([...ITEMS]);
-  pool.forEach(it=>{
+  shuffle([...ITEMS]).forEach(it=>{
     const b = document.createElement('button');
     b.className = 'imgToken';
     const img = document.createElement('img');
@@ -263,41 +248,46 @@ function layoutG1(){
   });
 }
 function nextG1(){
-  if(bag1.length===0) bag1 = shuffle([...ITEMS]);
+  if(bag1.length===0){ autoAdvance(); return; }
   target1 = bag1.pop();
-  playSound(target1.audio); // autoplay
+  // no autoplay; students press "Toun spillen"
 }
 function checkG1(it, el){
-  const ok = (it.id === target1.id);
+  const correctId = target1.correctId || target1.id; // fliger <-> videospill swap
+  const ok = (it.id === correctId);
   flash(el, ok);
   if(ok){ setTimeout(nextG1, 280); }
 }
 play1.onclick = ()=> { if(target1) playSound(target1.audio); };
 
-/* ---------- SPILL 2: Memory (image – sound) ---------- */
+/* ---------- SPILL 2: Memory (image – sound, 6 pairs) ---------- */
 const memGrid = document.getElementById('memGrid');
 const memReset = document.getElementById('memReset');
 let lockMem = false; let firstPick = null; let solved = 0;
 
+// restrict to these 6
+const MEM_IDS = ['kaartespill','velo','trommel','popp','radio','teddybier'];
+const MEM_ITEMS = ITEMS.filter(it=> MEM_IDS.includes(it.id));
+
 function buildMemory(){
   memGrid.innerHTML = ""; lockMem = false; firstPick = null; solved = 0;
-  // Build pairs: for each item, one image card + one sound card
   const cards = [];
-  ITEMS.forEach((it,idx)=>{
+  MEM_ITEMS.forEach(it=>{
     cards.push({type:'img', key:it.id, it});
     cards.push({type:'snd', key:it.id, it});
   });
-  shuffle(cards).forEach((card, i)=>{
+  shuffle(cards).forEach(card=>{
     const el = document.createElement('div');
     el.className = 'card';
     el.dataset.key = card.key;
     el.dataset.type = card.type;
     el.innerHTML = `
       <div class="inner">
-        <div class="face front" style="background:#fff; border-color:var(--pink-mid)"></div>
+        <div class="face front"></div>
         <div class="face back">
-          ${card.type==='img' ? `<img src="${card.it.img}" alt="${card.it.word}" style="width:85%; height:85%; object-fit:contain">`
-                               : `<div class="soundTag">🔊 ${card.it.word}</div>`}
+          ${card.type==='img'
+            ? `<img src="${card.it.img}" alt="${card.it.word}" style="width:85%; height:85%; object-fit:contain">`
+            : `<div class="sndWord">${card.it.word}</div>`}
         </div>
       </div>`;
     el.addEventListener('click', ()=> flipMem(el, card));
@@ -306,24 +296,23 @@ function buildMemory(){
 }
 function flipMem(el, card){
   if(lockMem) return;
-  const already = el.classList.contains('flipped');
-  if(already) return;
+  if(el.classList.contains('flipped')) return;
 
   el.classList.add('flipped');
   if(card.type==='snd'){ playSound(card.it.audio); }
 
   if(!firstPick){ firstPick = el; return; }
 
-  // Check match
-  const match = (firstPick.dataset.key === el.dataset.key) && (firstPick !== el)
-               && (firstPick.dataset.type !== el.dataset.type);
+  const match = (firstPick.dataset.key === el.dataset.key) &&
+                (firstPick !== el) &&
+                (firstPick.dataset.type !== el.dataset.type);
   lockMem = true;
   setTimeout(()=>{
     if(match){
-      // Keep them flipped & remove pointer events
       firstPick.style.pointerEvents = 'none';
       el.style.pointerEvents = 'none';
       solved += 1;
+      if(solved === MEM_ITEMS.length){ autoAdvance(700); }
     }else{
       firstPick.classList.remove('flipped');
       el.classList.remove('flipped');
@@ -333,7 +322,7 @@ function flipMem(el, card){
 }
 memReset.onclick = buildMemory;
 
-/* ---------- SPILL 3: Random big square ---------- */
+/* ---------- SPILL 3: Random big square (no autoplay, Check button plays audio) ---------- */
 const bigSq = document.getElementById('bigSq');
 const bigImg = document.getElementById('bigImg');
 const bigReset = document.getElementById('bigReset');
@@ -341,11 +330,10 @@ const sayPlay = document.getElementById('sayPlay');
 let bag3 = [];
 function refill3(){ bag3 = shuffle([...ITEMS]); }
 function next3(){
-  if(bag3.length===0) refill3();
+  if(bag3.length===0){ autoAdvance(); return; }
   const it = bag3.pop();
   bigImg.src = it.img; bigImg.alt = it.word;
   bigImg.classList.remove('fade'); void bigImg.offsetWidth; bigImg.classList.add('fade');
-  playSound(it.audio);
   bigSq.dataset.current = it.id;
 }
 function reset3(){ refill3(); bigImg.src=''; bigImg.alt=''; bigSq.dataset.current=''; }
@@ -356,53 +344,65 @@ sayPlay.addEventListener('click', ()=>{
   if(it) playSound(it.audio);
 });
 
-/* ---------- SPILL 4: Sentences (mam / mat der) ---------- */
+/* ---------- SPILL 4: Sentences ---------- */
 const nounSq = document.getElementById('nounSq');
 const nounImg = document.getElementById('nounImg');
 const prepSq = document.getElementById('prepSq');
-const nextNounBtn = document.getElementById('nextNoun');
 const playSentenceBtn = document.getElementById('playSentence');
+const wEch = document.getElementById('wEch');
+const wSpillen = document.getElementById('wSpillen');
+const wGaar = document.getElementById('wGaar');
 
 let bag4 = []; let currentNoun = null;
 function refill4(){ bag4 = shuffle([...ITEMS]); }
+function requiredPrepFor(it){ return (it.id==='popp' || it.id==='trommel') ? 'mat der' : 'mam'; }
 function setNoun(it){
   currentNoun = it;
   nounImg.src = it.img; nounImg.alt = it.word;
   nounImg.classList.remove('fade'); void nounImg.offsetWidth; nounImg.classList.add('fade');
-  // default prep on noun change: mam
-  prepSq.textContent = 'mam';
+  // auto set prep (no toggling)
+  prepSq.textContent = requiredPrepFor(it);
 }
 function nextNoun(){
-  if(bag4.length===0) refill4();
+  if(bag4.length===0){
+    showEnd(); // done with last game
+    return;
+  }
   setNoun(bag4.pop());
 }
-function togglePrep(){
-  const now = prepSq.textContent.trim();
-  prepSq.textContent = (now==='mam') ? 'mat der' : 'mam';
-  // play matching prep audio
-  playSound(now==='mam' ? SAZ.matder : SAZ.mam);
-  // feedback if correct for this noun
-  const correct = (currentNoun?.prep === (prepSq.textContent==='mat der' ? 'matder' : 'mam'));
-  flash(prepSq, correct);
-}
-prepSq.addEventListener('click', togglePrep);
-nextNounBtn.addEventListener('click', nextNoun);
+
+// each word plays its audio
+wEch.addEventListener('click', ()=> playSound(SAZ.ech));
+wSpillen.addEventListener('click', ()=> playSound(SAZ.spillen));
+wGaar.addEventListener('click', ()=> playSound(SAZ.gaar));
+prepSq.addEventListener('click', ()=> playSound(prepSq.textContent==='mat der' ? SAZ.matder : SAZ.mam));
+// image square = go next
+nounSq.addEventListener('click', nextNoun);
 
 async function playSentence(){
-  // Ech – spille – gär – (mam/mat der) – <word>
-  // We play 4 audios in sequence, then the noun audio
   const queue = [SAZ.ech, SAZ.spillen, SAZ.gaar, (prepSq.textContent==='mat der' ? SAZ.matder : SAZ.mam), currentNoun?.audio];
   for(const src of queue){
     if(!src) continue;
     await new Promise(res=>{
       speaker.onended = ()=> res();
       playSound(src).then(()=>{}).catch(()=>res());
-      // small guard timeout in case autoplay fails silently
       setTimeout(()=>res(), 2500);
     });
   }
 }
 playSentenceBtn.addEventListener('click', playSentence);
+
+/* Finish banner for game 4 */
+const endBanner = document.createElement('div');
+endBanner.style.position='fixed';
+endBanner.style.inset='0';
+endBanner.style.display='none';
+endBanner.style.alignItems='center';
+endBanner.style.justifyContent='center';
+endBanner.style.background='rgba(0,0,0,.25)';
+endBanner.innerHTML = `<div style="background:#fff; padding:20px 28px; border-radius:18px; border:6px solid var(--pink-mid); font-size:clamp(1.4rem,4.2vw,2.2rem);">Fantastësch! Du bass fäerdeg 🎉</div>`;
+document.body.appendChild(endBanner);
+function showEnd(){ endBanner.style.display='flex'; setTimeout(()=>{ endBanner.style.display='none'; }, 1600); }
 
 /* ---------- INIT ---------- */
 function init(){
@@ -414,6 +414,7 @@ function init(){
   reset3();
   // g4
   refill4(); nextNoun();
+
   // start
   showPage(0);
 }
@@ -421,3 +422,4 @@ init();
 </script>
 </body>
 </html>
+
