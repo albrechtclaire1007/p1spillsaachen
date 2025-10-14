@@ -94,6 +94,9 @@
   .face{ position:absolute; inset:0; border-radius:18px; border:6px solid var(--pink-mid);
          backface-visibility:hidden; display:grid; place-items:center; background:#fff;
          box-shadow:0 8px 20px rgba(0,0,0,.08); }
+  .front{
+    background:#fff url('https://i.postimg.cc/ZKkYXy7g/cardback-p1-game.png') center/70% no-repeat;
+  }
   .back{ transform:rotateY(180deg); }
   .sndWord{ font-size:clamp(1.6rem,4.6vmin,2.4rem); padding:.3rem .6rem; }
 
@@ -127,7 +130,7 @@
 <section class="wrap" id="g1">
   <h1>Lauschter a klick op dat richtegt Bild</h1>
   <div class="grid" id="grid1"></div>
-  <div><button class="btn" id="play1">Toun spillen</button></div>
+  <div><button class="btn" id="play1">Toun nach eng Kéier</button></div>
 </section>
 
 <!-- Spill 2: Memory (Bild – Toun) -->
@@ -157,9 +160,6 @@
     <span class="prepSq" id="prepSq">mam</span>
     <div class="inlineSq" id="nounSq"><img id="nounImg" alt="" style="width:85%; height:85%; object-fit:contain"></div>
     <span>.</span>
-  </div>
-  <div style="display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap;">
-    <button class="btn" id="playSentence">Saz ofspillen</button>
   </div>
 </section>
 
@@ -229,7 +229,7 @@ function flash(el, ok){
   setTimeout(()=> el.classList.remove('flash-good','flash-bad'), 260);
 }
 
-/* ---------- SPILL 1: Listen & click correct image ---------- */
+/* ---------- SPILL 1: Listen & click correct image (autoplay) ---------- */
 const grid1 = document.getElementById('grid1');
 const play1 = document.getElementById('play1');
 let bag1 = shuffle([...ITEMS]);
@@ -250,7 +250,7 @@ function layoutG1(){
 function nextG1(){
   if(bag1.length===0){ autoAdvance(); return; }
   target1 = bag1.pop();
-  // no autoplay; students press "Toun spillen"
+  playSound(target1.audio); // AUTOPLAY
 }
 function checkG1(it, el){
   const correctId = target1.correctId || target1.id; // fliger <-> videospill swap
@@ -260,13 +260,13 @@ function checkG1(it, el){
 }
 play1.onclick = ()=> { if(target1) playSound(target1.audio); };
 
-/* ---------- SPILL 2: Memory (image – sound, 6 pairs) ---------- */
+/* ---------- SPILL 2: Memory (image – sound, 7 pairs, custom cover) ---------- */
 const memGrid = document.getElementById('memGrid');
 const memReset = document.getElementById('memReset');
 let lockMem = false; let firstPick = null; let solved = 0;
 
-// restrict to these 6
-const MEM_IDS = ['kaartespill','velo','trommel','popp','radio','teddybier'];
+// Now 7 pairs (14 cards): add 'pesel'
+const MEM_IDS = ['kaartespill','velo','trommel','popp','radio','teddybier','pesel'];
 const MEM_ITEMS = ITEMS.filter(it=> MEM_IDS.includes(it.id));
 
 function buildMemory(){
@@ -348,7 +348,6 @@ sayPlay.addEventListener('click', ()=>{
 const nounSq = document.getElementById('nounSq');
 const nounImg = document.getElementById('nounImg');
 const prepSq = document.getElementById('prepSq');
-const playSentenceBtn = document.getElementById('playSentence');
 const wEch = document.getElementById('wEch');
 const wSpillen = document.getElementById('wSpillen');
 const wGaar = document.getElementById('wGaar');
@@ -365,7 +364,7 @@ function setNoun(it){
 }
 function nextNoun(){
   if(bag4.length===0){
-    showEnd(); // done with last game
+    showEnd(); // finished
     return;
   }
   setNoun(bag4.pop());
@@ -378,19 +377,6 @@ wGaar.addEventListener('click', ()=> playSound(SAZ.gaar));
 prepSq.addEventListener('click', ()=> playSound(prepSq.textContent==='mat der' ? SAZ.matder : SAZ.mam));
 // image square = go next
 nounSq.addEventListener('click', nextNoun);
-
-async function playSentence(){
-  const queue = [SAZ.ech, SAZ.spillen, SAZ.gaar, (prepSq.textContent==='mat der' ? SAZ.matder : SAZ.mam), currentNoun?.audio];
-  for(const src of queue){
-    if(!src) continue;
-    await new Promise(res=>{
-      speaker.onended = ()=> res();
-      playSound(src).then(()=>{}).catch(()=>res());
-      setTimeout(()=>res(), 2500);
-    });
-  }
-}
-playSentenceBtn.addEventListener('click', playSentence);
 
 /* Finish banner for game 4 */
 const endBanner = document.createElement('div');
@@ -422,4 +408,3 @@ init();
 </script>
 </body>
 </html>
-
