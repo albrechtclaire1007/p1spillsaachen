@@ -1,309 +1,423 @@
 <!DOCTYPE html>
 <html lang="lb">
 <head>
-  <meta charset="UTF-8" />
-  <!-- Full-bleed on iPhone notches, proper scaling -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Spillsaachen Quiz</title>
-  <style>
-    @font-face{
-      font-family:'Schoulschrëft';
-      src:url('https://raw.githubusercontent.com/albrechtclaire1007/schoulschreft/main/schoulschreft_bold%5B2%5D.TTF') format('truetype');
-      font-weight:bold; font-display:swap;
-    }
-    :root{
-      --p1-light:#cda7ca; --p1-mid:#e4b7d0; --p1-dark:#d88cb8; --accent:#ffd51e;
-      --ink:#1f1f1f; --ok:#18a05e; --bad:#ef4444;
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-right: env(safe-area-inset-right, 0px);
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
-      --safe-left: env(safe-area-inset-left, 0px);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; background:linear-gradient(135deg,var(--p1-mid),var(--p1-light));
-      font-family:'Schoulschrëft', Arial, sans-serif; font-weight:bold; color:var(--ink);
-      display:grid; place-items:center; padding:12px;
-    }
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>P1 – Spillsaachen – Spiller</title>
+<style>
+  /* Font */
+  @font-face{
+    font-family:'Schoulschrëft';
+    src:url('https://raw.githubusercontent.com/albrechtclaire1007/schoulschreft/main/schoulschreft_bold%5B2%5D.TTF') format('truetype');
+    font-weight:bold; font-style:normal; font-display:swap;
+  }
 
-    /* Desktop/Laptop: keep 16:9 card */
-    .stage{
-      aspect-ratio:16/9; width:min(1200px,96vw); background:#fff; border-radius:24px;
-      box-shadow:0 20px 60px rgba(0,0,0,.12); overflow:hidden; display:flex; flex-direction:column
-    }
+  :root{
+    /* P1 pinks */
+    --pink-mid:#e4b7d0;
+    --pink-light:#f6e4ee;
+    --pink-dark:#d88cb8;
+    --ink:#1f1f1f;
+    --white:#fff;
+    --bad:#ffcccc;
+    --ok:#b7f0c8;
+    --border:3px;
+  }
 
-    header{
-      background:var(--p1-dark); color:#fff; padding:14px 20px;
-      display:flex; justify-content:space-between; align-items:center
-    }
-    header h1{margin:0; font-size:clamp(18px,2.6vw,32px)}
-    .pill{background:#ffffff2b; padding:8px 12px; border-radius:999px}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; outline:none;}
+  html,body{height:100%; margin:0; background:linear-gradient(135deg,var(--pink-mid),var(--pink-light)); color:var(--ink); font-family:'Schoulschrëft', Arial, sans-serif;}
 
-    .question{
-      flex:1; display:flex; flex-direction:column; gap:10px;
-      padding:12px 14px 0; background:linear-gradient(180deg,#fff 0%,#fff 60%,#fef6fb 100%)
-    }
-    .toprow{display:flex; justify-content:space-between; align-items:center; gap:12px}
-    .word{
-      flex:1; text-align:center; font-size:clamp(28px,4.8vw,64px); line-height:1.1; color:var(--p1-dark);
-      padding:4px 8px
-    }
+  .top{
+    position:sticky; top:8px; z-index:10; display:flex; gap:10px; align-items:center; justify-content:center;
+    background:var(--white); border:var(--border) solid var(--pink-dark); border-radius:18px;
+    padding:.35rem .6rem; margin:10px auto; width:fit-content;
+    box-shadow:0 8px 24px rgba(0,0,0,.08);
+  }
+  .btn{
+    border:var(--border) solid var(--ink); background:var(--white); color:var(--ink);
+    padding:.45rem .85rem; border-radius:14px; cursor:pointer; font-size:1.05rem;
+  }
+  .btn:active{ transform:scale(.98); }
+  .flow{opacity:.9; font-size:1rem; padding:0 .4rem; min-width:10ch; text-align:center;}
 
-    /* Toggle */
-    .toggle{ display:flex; align-items:center; gap:10px; user-select:none }
-    .switch{
-      position:relative; width:66px; height:34px; background:#e8e8ee; border-radius:999px; cursor:pointer;
-      box-shadow:inset 0 2px 6px rgba(0,0,0,.12)
-    }
-    .knob{
-      position:absolute; top:3px; left:3px; width:28px; height:28px; border-radius:50%;
-      background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.2); transition:.2s ease
-    }
-    .switch.on{background:#b4f0c8}
-    .switch.on .knob{left:35px}
-    .toggle label{font-size:clamp(14px,1.8vw,18px)}
+  .wrap{
+    min-height:100%;
+    display:flex; flex-direction:column; align-items:center;
+    gap:2.5vmin; padding:2.5vmin 3vmin 4vmin;
+  }
+  h1{margin:.2rem 0 0; text-align:center; font-size:clamp(2rem, 6vmin, 4.2rem); color:var(--ink);}
 
-    .notice{display:none; text-align:center; color:#8b4a70; font-size:clamp(14px,1.8vw,18px)}
+  .hidden{display:none !important;}
 
-    .choices{
-      padding:0 12px 12px;
-      display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:12px; margin-top:auto
-    }
-    .choice{
-      background:transparent; border:none; padding:4px; cursor:pointer; aspect-ratio:1;
-      display:flex; align-items:center; justify-content:center; transition:.15s ease
-    }
-    .choice img{
-      width:100%; height:100%; object-fit:contain; border-radius:16px;
-      box-shadow:0 6px 18px rgba(0,0,0,.12)
-    }
-    .choice:hover{transform:translateY(-2px)}
-    .choice.correct img{outline:6px solid var(--ok)}
-    .choice.wrong img{outline:6px solid var(--bad)}
+  /* Generic grids */
+  .grid{
+    width:95vw; max-width:2000px; display:grid; gap:2vmin;
+    grid-template-columns: repeat(auto-fill, minmax(14vmin, 1fr));
+    align-items:stretch;
+  }
 
-    .feedback{display:none; position:fixed; inset:0; z-index:1000; align-items:center; justify-content:center; flex-direction:column; gap:18px; color:#fff; text-align:center}
-    .feedback .icon{font-size:clamp(48px,10vw,120px)}
-    .feedback .msg{font-size:clamp(32px,6vw,96px)}
-    .feedback .next{font:inherit; font-size:clamp(18px,2.4vw,28px); background:#ffd51e; color:#8b4a70; border:none; border-radius:18px; padding:14px 28px; cursor:pointer}
-    .feedback.ok{background:linear-gradient(135deg,#4ade80,#22c55e)}
-    .feedback.no{background:linear-gradient(135deg,#f87171,#ef4444)}
+  /* Image tokens (square buttons) */
+  .imgToken{
+    background:var(--white); border:6px solid var(--pink-mid); border-radius:22px;
+    display:grid; place-items:center; aspect-ratio:1/1; cursor:pointer;
+    transition:transform .1s ease, border-color .15s ease, filter .15s ease, background .15s ease;
+    box-shadow:0 10px 26px rgba(0,0,0,.08);
+  }
+  .imgToken:active{ transform:scale(.97); }
+  .imgToken img{ width:90%; height:90%; object-fit:contain; }
 
-    footer{display:flex; justify-content:flex-start; align-items:center; gap:10px; padding:12px 20px; background:#fff; border-top:1px solid #f0d7e7}
-    .restart{font:inherit; border:none; border-radius:14px; background:var(--p1-light); padding:10px 14px; cursor:pointer}
+  .flash-good{ background:var(--ok) !important; border-color:var(--ok) !important; }
+  .flash-bad{ background:var(--bad) !important; border-color:var(--bad) !important; }
 
-    .complete{display:none; flex:1; align-items:center; justify-content:center; flex-direction:column; gap:16px; padding:24px; text-align:center}
-    .complete h2{font-size:clamp(24px,4vw,48px); color:var(--p1-dark); margin:0}
-    .complete .big{font-size:clamp(18px,3vw,28px)}
+  /* Audio play button */
+  .audioBar{ display:flex; align-items:center; gap:.8rem; }
+  .playBtn{
+    width:58px; height:58px; border-radius:50%;
+    border:var(--border) solid var(--ink); background:var(--pink-mid);
+    display:grid; place-items:center; font-size:1.3rem; cursor:pointer;
+  }
 
-    /* ——— MOBILE/SMALL VIEW ———
-       On narrow screens or tall portrait (<= 4:3), use full-screen canvas,
-       bigger tiles, fewer columns, no rounded window */
-    @media (max-aspect-ratio: 4/3), (max-width: 768px){
-      body{ padding:0; }
-      .stage{
-        width:100vw; height:100vh; aspect-ratio:auto; border-radius:0; box-shadow:none;
-        padding-top:var(--safe-top); padding-right:var(--safe-right);
-        padding-bottom:var(--safe-bottom); padding-left:var(--safe-left);
-      }
-      header{ padding:10px 14px; }
-      header h1{ font-size:clamp(18px,5.4vw,28px); }
-      .pill{ padding:6px 10px; }
-      .question{ padding:10px 10px 0; gap:8px; }
-      .word{ font-size:clamp(24px,7vw,40px); }
-      .toggle label{ font-size:clamp(14px,4vw,18px); }
-      .choices{ gap:10px; padding:0 10px 10px; grid-template-columns:repeat(3,minmax(0,1fr)); }
-      .choice img{ border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.12); }
-      footer{ padding:10px 12px; }
-    }
-    @media (max-width: 520px){
-      .choices{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-    }
-  </style>
+  /* Big random square (game 3) */
+  .bigSquare{
+    width:min(95vmin,100%); aspect-ratio:1/1; background:#fff;
+    border:12px solid var(--pink-mid); border-radius:40px; display:grid; place-items:center;
+    position:relative; cursor:pointer;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+    transition:transform .12s ease;
+  }
+  .bigSquare:active{ transform:scale(.98); }
+  .bigSquare img{ width:88%; height:88%; object-fit:contain; }
+  .reset{
+    position:absolute; top:14px; right:18px; width:48px; height:48px; border-radius:50%;
+    background:#fff; border:4px solid var(--pink-mid); display:grid; place-items:center;
+    font-size:1.4rem; line-height:1; cursor:pointer;
+  }
+  .fade{ animation:fadeIn .35s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:scale(.9)} to{opacity:1; transform:scale(1)} }
+
+  /* Memory */
+  .memGrid{
+    width:95vw; max-width:1600px;
+    display:grid; gap:1.4vmin;
+    grid-template-columns: repeat(auto-fill, minmax(16vmin, 1fr));
+  }
+  .card{
+    aspect-ratio:3/4; perspective:1000px; cursor:pointer;
+  }
+  .inner{
+    position:relative; width:100%; height:100%;
+    transform-style:preserve-3d; transition:transform .25s ease;
+  }
+  .flipped .inner{ transform:rotateY(180deg); }
+  .face{
+    position:absolute; inset:0; border-radius:18px; border:6px solid var(--pink-mid);
+    backface-visibility:hidden; display:grid; place-items:center; background:#fff;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+  }
+  .front{ }
+  .back{ transform:rotateY(180deg); }
+  .soundTag{ font-size:clamp(1.4rem,4vmin,2.2rem); }
+
+  /* Sentence builder (game 4) */
+  .sentence{ display:flex; align-items:center; gap:min(2.2vmin,16px); flex-wrap:wrap; justify-content:center; font-size:clamp(2rem,4.8vw,3.2rem); }
+  .inlineSq{
+    display:inline-grid; place-items:center; width:min(36vmin,420px); aspect-ratio:1/1;
+    border:10px solid var(--pink-mid); border-radius:28px; background:#fff; cursor:pointer;
+    box-shadow:0 8px 24px rgba(0,0,0,.08); font-size:min(20vmin,10rem); transition:transform .12s ease;
+  }
+  .inlineSq:active{ transform:scale(.97); }
+  .wordSq{ padding:0 .6rem; min-height:3.2rem; border-radius:16px; border:6px solid var(--pink-mid); background:#fff; }
+  .wordSqBtn{ border:6px solid var(--pink-mid); background:var(--pink-light); padding:.3rem .7rem; border-radius:14px; cursor:pointer; }
+  .miniBar{ display:flex; gap:.6rem; align-items:center; justify-content:center; flex-wrap:wrap; }
+  .hint{ font-size:clamp(1.1rem,2.6vw,1.6rem); opacity:.8; }
+
+</style>
 </head>
 <body>
-  <div class="stage" role="application" aria-label="P1 Spillsaachen Quiz">
-    <header>
-      <h1>Spillsaachen Quiz</h1>
-      <div class="pill" id="score">0</div>
-    </header>
 
-    <section class="question" id="question">
-      <div class="toprow">
-        <div class="toggle" id="soundToggle" aria-label="Toun un/aus" role="button" tabindex="0">
-          <div class="switch" id="switch"><div class="knob"></div></div>
-          <label id="soundLabel">Toun aus</label>
-        </div>
-        <div class="word" id="word">—</div>
-        <span style="width:110px"></span>
-      </div>
-      <div class="notice" id="notice">Tippt op den Toun-Schalter fir den Toun unzeschalten.</div>
-      <div class="choices" id="choices" aria-label="Wielt dat richtegt Bild"></div>
-    </section>
+<!-- Top nav -->
+<div class="top">
+  <button class="btn" id="prev">Zréck</button>
+  <span class="flow" id="flowLabel">1. Spill</span>
+  <button class="btn" id="next">Weider</button>
+</div>
 
-    <section class="complete" id="complete">
-      <h2>Fantastësch!</h2>
-      <div class="big" id="scoreMsg">Du hues 0 richteg beim éischte Versuch.</div>
-      <button class="restart" id="again">Nach eng Kéier spillen</button>
-    </section>
+<!-- Spill 1: Lauschter a klick op dat richtegt Bild -->
+<section class="wrap" id="g1">
+  <h1>Lauschter a klick op dat richtegt Bild</h1>
+  <div class="audioBar"><button class="playBtn" id="play1" title="Ofspillen">▶</button></div>
+  <div class="grid" id="grid1"></div>
+</section>
 
-    <div class="feedback" id="feedback">
-      <div class="icon" id="fbIcon">✓</div>
-      <div class="msg" id="fbMsg">Richteg!</div>
-      <button class="next" id="nextBtn">Weider</button>
-    </div>
-
-    <footer>
-      <button class="restart" id="restart">Nei starten</button>
-    </footer>
+<!-- Spill 2: Memory (Bild – Toun) -->
+<section class="wrap hidden" id="g2">
+  <h1>Memory: Bild – Toun</h1>
+  <div class="memGrid" id="memGrid"></div>
+  <div class="miniBar">
+    <button class="btn" id="memReset">Nei mëschen</button>
   </div>
+</section>
 
-  <script>
-    const RAW = "https://raw.githubusercontent.com/albrechtclaire1007/p1spillsaachen/main";
+<!-- Spill 3: Kuck a so wat et ass -->
+<section class="wrap hidden" id="g3">
+  <h1>Kuck a so wat et ass</h1>
+  <div class="bigSquare" id="bigSq">
+    <img id="bigImg" alt="">
+    <button class="reset" id="bigReset" title="Nei ufänken">↻</button>
+  </div>
+  <div class="miniBar">
+    <button class="btn" id="sayPlay">Toun spillen</button>
+  </div>
+</section>
 
-    // Stable ids + explicit swap for fliger/videospill correctness
-    const ITEMS = [
-      { id:'teddybier',  word:'en Teddybier',  img:'https://i.postimg.cc/XpDBC4jQ/1.png',  audio:`${RAW}/teddybier1.mp3` },
-      { id:'fliger',     word:'e Fliger',      img:'https://i.postimg.cc/zHG3yP4s/2.png',  audio:`${RAW}/1fliger.mp3`,   correctId:'videospill' },
-      { id:'velo',       word:'e Vëlo',        img:'https://i.postimg.cc/qztMWnrx/11.png', audio:`${RAW}/1velo.mp3` },
-      { id:'popp',       word:'eng Popp',      img:'https://i.postimg.cc/KkJ8hD4J/8.png',  audio:`${RAW}/1popp.mp3` },
-      { id:'ball',       word:'e Ball',        img:'https://i.postimg.cc/Vd5d1pqM/5.png',  audio:`${RAW}/1ball.mp3` },
-      { id:'wierfel',    word:'e Wierfel',     img:'https://i.postimg.cc/YhJq79qK/12.png', audio:`${RAW}/1wierfel.mp3` },
-      { id:'roboter',    word:'e Roboter',     img:'https://i.postimg.cc/BtSj7Xtm/3.png',  audio:`${RAW}/1roboter.mp3` },
-      { id:'radio',      word:'e Radio',       img:'https://i.postimg.cc/WdkzqZf1/6.png',  audio:`${RAW}/1radio.mp3` },
-      { id:'kaartespill',word:'e Kaartespill', img:'https://i.postimg.cc/YGpCPs2v/9.png',  audio:`${RAW}/1kaarte.mp3` },
-      { id:'trommel',    word:'eng Trommel',   img:'https://i.postimg.cc/xq1dyhF7/10.png', audio:`${RAW}/1trommel.mp3` },
-      { id:'videospill', word:'e Videospill',  img:'https://i.postimg.cc/S2rJNp1L/4.png',  audio:`${RAW}/1video.mp3`,    correctId:'fliger' },
-      { id:'pesel',      word:'e Pësel',       img:'https://i.postimg.cc/SXbs6Kw7/7.png',  audio:`${RAW}/1pesel.mp3` }
-    ];
+<!-- Spill 4: Lies d'Sätz -->
+<section class="wrap hidden" id="g4">
+  <h1>Lies d'Sätz</h1>
+  <div class="sentence">
+    <span>Ech</span>
+    <span class="wordSq">spille</span>
+    <span class="wordSq">gär</span>
+    <button class="wordSqBtn" id="prepSq" title="mam / mat der">mam</button>
+    <div class="inlineSq" id="nounSq"><img id="nounImg" alt="" style="width:85%; height:85%; object-fit:contain"></div>
+    <span>.</span>
+  </div>
+  <div class="miniBar">
+    <button class="btn" id="playSentence">Saz ofspillen</button>
+    <button class="btn" id="nextNoun">Nächst</button>
+    <span class="hint">Hinweis: **mat der** nëmme bei <em>eng Popp</em> a <em>eng Trommel</em>.</span>
+  </div>
+</section>
 
-    const SHOW_ALL = true;
+<audio id="speaker" preload="auto"></audio>
 
-    let order = [], qIndex = 0;
-    let firstTryCorrectCount = 0;
-    let questionHadMistake = false;
-    let currentAudio = null, soundOn = false;
+<script>
+/* ---------- DATA ---------- */
+const RAW = "https://raw.githubusercontent.com/albrechtclaire1007/p1spillsaachen/main";
 
-    function shuffle(a){ return a.map(x=>[Math.random(),x]).sort((u,v)=>u[0]-v[0]).map(x=>x[1]); }
+/* Items reused from your existing P1 quiz (ids, words, imgs, audios)
+   + preposition rule for game 4: Popp & Trommel -> 'mat der', others -> 'mam' */
+const ITEMS = [
+  { id:'teddybier',  word:'en Teddybier',  img:'https://i.postimg.cc/XpDBC4jQ/1.png',  audio:`${RAW}/teddybier1.mp3`,  prep:'mam' },
+  { id:'fliger',     word:'e Fliger',      img:'https://i.postimg.cc/zHG3yP4s/2.png',  audio:`${RAW}/1fliger.mp3`,     prep:'mam' },
+  { id:'velo',       word:'e Vëlo',        img:'https://i.postimg.cc/qztMWnrx/11.png', audio:`${RAW}/1velo.mp3`,       prep:'mam' },
+  { id:'popp',       word:'eng Popp',      img:'https://i.postimg.cc/KkJ8hD4J/8.png',  audio:`${RAW}/1popp.mp3`,       prep:'matder' },
+  { id:'ball',       word:'e Ball',        img:'https://i.postimg.cc/Vd5d1pqM/5.png',  audio:`${RAW}/1ball.mp3`,       prep:'mam' },
+  { id:'wierfel',    word:'e Wierfel',     img:'https://i.postimg.cc/YhJq79qK/12.png', audio:`${RAW}/1wierfel.mp3`,    prep:'mam' },
+  { id:'roboter',    word:'e Roboter',     img:'https://i.postimg.cc/BtSj7Xtm/3.png',  audio:`${RAW}/1roboter.mp3`,    prep:'mam' },
+  { id:'radio',      word:'e Radio',       img:'https://i.postimg.cc/WdkzqZf1/6.png',  audio:`${RAW}/1radio.mp3`,      prep:'mam' },
+  { id:'kaartespill',word:'e Kaartespill', img:'https://i.postimg.cc/YGpCPs2v/9.png',  audio:`${RAW}/1kaarte.mp3`,     prep:'mam' },
+  { id:'trommel',    word:'eng Trommel',   img:'https://i.postimg.cc/xq1dyhF7/10.png', audio:`${RAW}/1trommel.mp3`,    prep:'matder' },
+  { id:'videospill', word:'e Videospill',  img:'https://i.postimg.cc/S2rJNp1L/4.png',  audio:`${RAW}/1video.mp3`,      prep:'mam' },
+  { id:'pesel',      word:'e Pësel',       img:'https://i.postimg.cc/SXbs6Kw7/7.png',  audio:`${RAW}/1pesel.mp3`,      prep:'mam' }
+];
 
-    function init(){
-      order = shuffle([...ITEMS]);
-      qIndex = 0;
-      firstTryCorrectCount = 0;
-      updateScore();
-      document.getElementById('complete').style.display='none';
-      document.getElementById('question').style.display='flex';
-      buildQuestion(true);
+/* Sentence word audios */
+const SAZ = {
+  ech    : `${RAW}/ech.mp3`,
+  spillen: `${RAW}/spillen.mp3`,
+  gaar   : `${RAW}/gär.mp3`,
+  mam    : `${RAW}/mam.mp3`,
+  matder : `${RAW}/mat%20der.mp3`
+};
+
+/* ---------- UTIL ---------- */
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+const pages = ["g1","g2","g3","g4"];
+let pageIdx = 0;
+const flowLabel = document.getElementById('flowLabel');
+function labelFor(i){ return `${i+1}. Spill`; }
+function showPage(i){
+  pageIdx = Math.max(0, Math.min(pages.length-1, i));
+  pages.forEach((id,idx)=>document.getElementById(id).classList.toggle('hidden', idx!==pageIdx));
+  flowLabel.textContent = labelFor(pageIdx);
+}
+document.getElementById('prev').onclick = ()=> showPage(pageIdx-1);
+document.getElementById('next').onclick = ()=> showPage(pageIdx+1);
+
+const speaker = document.getElementById('speaker');
+async function playSound(src){ try{ if(speaker.src!==src) speaker.src=src; await speaker.play(); }catch(e){} }
+function flash(el, ok){
+  el.classList.remove('flash-good','flash-bad');
+  void el.offsetWidth;
+  el.classList.add(ok ? 'flash-good' : 'flash-bad');
+  setTimeout(()=> el.classList.remove('flash-good','flash-bad'), 260);
+}
+
+/* ---------- SPILL 1: Listen & click correct image ---------- */
+const grid1 = document.getElementById('grid1');
+const play1 = document.getElementById('play1');
+let bag1 = shuffle([...ITEMS]);
+let target1 = null;
+
+function layoutG1(){
+  grid1.innerHTML = "";
+  const pool = shuffle([...ITEMS]);
+  pool.forEach(it=>{
+    const b = document.createElement('button');
+    b.className = 'imgToken';
+    const img = document.createElement('img');
+    img.src = it.img; img.alt = it.word;
+    b.appendChild(img);
+    b.onclick = ()=> checkG1(it, b);
+    grid1.appendChild(b);
+  });
+}
+function nextG1(){
+  if(bag1.length===0) bag1 = shuffle([...ITEMS]);
+  target1 = bag1.pop();
+  playSound(target1.audio); // autoplay
+}
+function checkG1(it, el){
+  const ok = (it.id === target1.id);
+  flash(el, ok);
+  if(ok){ setTimeout(nextG1, 280); }
+}
+play1.onclick = ()=> { if(target1) playSound(target1.audio); };
+
+/* ---------- SPILL 2: Memory (image – sound) ---------- */
+const memGrid = document.getElementById('memGrid');
+const memReset = document.getElementById('memReset');
+let lockMem = false; let firstPick = null; let solved = 0;
+
+function buildMemory(){
+  memGrid.innerHTML = ""; lockMem = false; firstPick = null; solved = 0;
+  // Build pairs: for each item, one image card + one sound card
+  const cards = [];
+  ITEMS.forEach((it,idx)=>{
+    cards.push({type:'img', key:it.id, it});
+    cards.push({type:'snd', key:it.id, it});
+  });
+  shuffle(cards).forEach((card, i)=>{
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.dataset.key = card.key;
+    el.dataset.type = card.type;
+    el.innerHTML = `
+      <div class="inner">
+        <div class="face front" style="background:#fff; border-color:var(--pink-mid)"></div>
+        <div class="face back">
+          ${card.type==='img' ? `<img src="${card.it.img}" alt="${card.it.word}" style="width:85%; height:85%; object-fit:contain">`
+                               : `<div class="soundTag">🔊 ${card.it.word}</div>`}
+        </div>
+      </div>`;
+    el.addEventListener('click', ()=> flipMem(el, card));
+    memGrid.appendChild(el);
+  });
+}
+function flipMem(el, card){
+  if(lockMem) return;
+  const already = el.classList.contains('flipped');
+  if(already) return;
+
+  el.classList.add('flipped');
+  if(card.type==='snd'){ playSound(card.it.audio); }
+
+  if(!firstPick){ firstPick = el; return; }
+
+  // Check match
+  const match = (firstPick.dataset.key === el.dataset.key) && (firstPick !== el)
+               && (firstPick.dataset.type !== el.dataset.type);
+  lockMem = true;
+  setTimeout(()=>{
+    if(match){
+      // Keep them flipped & remove pointer events
+      firstPick.style.pointerEvents = 'none';
+      el.style.pointerEvents = 'none';
+      solved += 1;
+    }else{
+      firstPick.classList.remove('flipped');
+      el.classList.remove('flipped');
     }
+    firstPick = null; lockMem = false;
+  }, 650);
+}
+memReset.onclick = buildMemory;
 
-    function updateScore(){ document.getElementById('score').textContent = String(firstTryCorrectCount); }
+/* ---------- SPILL 3: Random big square ---------- */
+const bigSq = document.getElementById('bigSq');
+const bigImg = document.getElementById('bigImg');
+const bigReset = document.getElementById('bigReset');
+const sayPlay = document.getElementById('sayPlay');
+let bag3 = [];
+function refill3(){ bag3 = shuffle([...ITEMS]); }
+function next3(){
+  if(bag3.length===0) refill3();
+  const it = bag3.pop();
+  bigImg.src = it.img; bigImg.alt = it.word;
+  bigImg.classList.remove('fade'); void bigImg.offsetWidth; bigImg.classList.add('fade');
+  playSound(it.audio);
+  bigSq.dataset.current = it.id;
+}
+function reset3(){ refill3(); bigImg.src=''; bigImg.alt=''; bigSq.dataset.current=''; }
+bigSq.addEventListener('click', (e)=>{ if(e.target===bigReset) return; next3(); });
+bigReset.addEventListener('click', (e)=>{ e.stopPropagation(); reset3(); });
+sayPlay.addEventListener('click', ()=>{
+  const it = ITEMS.find(x=>x.id===bigSq.dataset.current);
+  if(it) playSound(it.audio);
+});
 
-    async function buildQuestion(tryAutoplay=false){
-      const item = order[qIndex];
-      questionHadMistake = false;
+/* ---------- SPILL 4: Sentences (mam / mat der) ---------- */
+const nounSq = document.getElementById('nounSq');
+const nounImg = document.getElementById('nounImg');
+const prepSq = document.getElementById('prepSq');
+const nextNounBtn = document.getElementById('nextNoun');
+const playSentenceBtn = document.getElementById('playSentence');
 
-      document.getElementById('word').textContent = item.word;
-      document.getElementById('notice').style.display = soundOn ? 'none' : 'block';
+let bag4 = []; let currentNoun = null;
+function refill4(){ bag4 = shuffle([...ITEMS]); }
+function setNoun(it){
+  currentNoun = it;
+  nounImg.src = it.img; nounImg.alt = it.word;
+  nounImg.classList.remove('fade'); void nounImg.offsetWidth; nounImg.classList.add('fade');
+  // default prep on noun change: mam
+  prepSq.textContent = 'mam';
+}
+function nextNoun(){
+  if(bag4.length===0) refill4();
+  setNoun(bag4.pop());
+}
+function togglePrep(){
+  const now = prepSq.textContent.trim();
+  prepSq.textContent = (now==='mam') ? 'mat der' : 'mam';
+  // play matching prep audio
+  playSound(now==='mam' ? SAZ.matder : SAZ.mam);
+  // feedback if correct for this noun
+  const correct = (currentNoun?.prep === (prepSq.textContent==='mat der' ? 'matder' : 'mam'));
+  flash(prepSq, correct);
+}
+prepSq.addEventListener('click', togglePrep);
+nextNounBtn.addEventListener('click', nextNoun);
 
-      const choicesEl = document.getElementById('choices');
-      choicesEl.innerHTML = '';
+async function playSentence(){
+  // Ech – spille – gär – (mam/mat der) – <word>
+  // We play 4 audios in sequence, then the noun audio
+  const queue = [SAZ.ech, SAZ.spillen, SAZ.gaar, (prepSq.textContent==='mat der' ? SAZ.matder : SAZ.mam), currentNoun?.audio];
+  for(const src of queue){
+    if(!src) continue;
+    await new Promise(res=>{
+      speaker.onended = ()=> res();
+      playSound(src).then(()=>{}).catch(()=>res());
+      // small guard timeout in case autoplay fails silently
+      setTimeout(()=>res(), 2500);
+    });
+  }
+}
+playSentenceBtn.addEventListener('click', playSentence);
 
-      const pool = SHOW_ALL ? ITEMS : shuffle([item, ...shuffle(ITEMS.filter(x=>x!==item)).slice(0,2)]);
-
-      const correctId = item.correctId || item.id; // swapped logic
-      pool.forEach(opt=>{
-        const btn = document.createElement('button');
-        btn.className = 'choice';
-        btn.setAttribute('aria-label', opt.word);
-        const img = document.createElement('img');
-        img.src = opt.img; img.alt = opt.word;
-        btn.appendChild(img);
-        btn.addEventListener('click', ()=> onChoose(opt.id === correctId, btn));
-        choicesEl.appendChild(btn);
-      });
-
-      if(tryAutoplay && soundOn){ await playAudio(item); }
-    }
-
-    function onChoose(correct, btn){
-      if(correct){
-        btn.classList.add('correct');
-        if(!questionHadMistake){ firstTryCorrectCount++; updateScore(); }
-        showFeedback(true);
-      }else{
-        btn.classList.add('wrong');
-        questionHadMistake = true; // won’t count anymore
-        showFeedback(false);        // allow retry
-      }
-      document.querySelectorAll('.choice').forEach(b=> b.style.pointerEvents='none');
-    }
-
-    function showFeedback(ok){
-      const fb = document.getElementById('feedback');
-      const icon = document.getElementById('fbIcon');
-      const msg = document.getElementById('fbMsg');
-      fb.className = 'feedback ' + (ok ? 'ok' : 'no');
-      icon.textContent = ok ? '✓' : '✗';
-      msg.textContent = ok ? 'Richteg!' : 'Nach eng Kéier…';
-      fb.style.display = 'flex';
-      document.getElementById('nextBtn').style.display = ok ? 'inline-block' : 'none';
-      if(!ok){
-        setTimeout(()=>{
-          fb.style.display='none';
-          document.querySelectorAll('.choice').forEach(b=> b.style.pointerEvents='auto');
-        }, 900);
-      }
-    }
-
-    function next(){
-      const fb = document.getElementById('feedback');
-      fb.style.display = 'none';
-      document.querySelectorAll('.choice').forEach(b=> b.style.pointerEvents='auto');
-      qIndex++;
-      if(qIndex>=order.length){ finish(); }
-      else { buildQuestion(true); }
-    }
-
-    function finish(){
-      document.getElementById('question').style.display='none';
-      const done = document.getElementById('complete');
-      done.style.display='flex';
-      document.getElementById('scoreMsg').textContent =
-        `Du hues ${firstTryCorrectCount} richteg beim éischte Versuch.`;
-    }
-
-    function restart(){ init(); }
-
-    async function playAudio(item){
-      try{
-        if(currentAudio){ currentAudio.pause(); currentAudio=null; }
-        if(!item.audio || !soundOn) return;
-        const a = new Audio(item.audio);
-        currentAudio = a;
-        await a.play().catch(()=>{});
-      }catch(e){}
-    }
-
-    // Toun un/aus toggle with keyboard access
-    function setSound(state){
-      soundOn = state;
-      const sw = document.getElementById('switch');
-      const label = document.getElementById('soundLabel');
-      sw.classList.toggle('on', soundOn);
-      label.textContent = soundOn ? 'Toun un' : 'Toun aus';
-      document.getElementById('notice').style.display = soundOn ? 'none' : 'block';
-      if(soundOn){ playAudio(order[qIndex]); } else { if(currentAudio){ currentAudio.pause(); } }
-    }
-    const toggle = document.getElementById('soundToggle');
-    toggle.addEventListener('click', ()=> setSound(!soundOn));
-    toggle.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); setSound(!soundOn); } });
-
-    document.getElementById('nextBtn').addEventListener('click', next);
-    document.getElementById('restart').addEventListener('click', restart);
-    document.getElementById('again').addEventListener('click', restart);
-
-    init();
-  </script>
+/* ---------- INIT ---------- */
+function init(){
+  // g1
+  layoutG1(); nextG1();
+  // g2
+  buildMemory();
+  // g3
+  reset3();
+  // g4
+  refill4(); nextNoun();
+  // start
+  showPage(0);
+}
+init();
+</script>
 </body>
 </html>
-
